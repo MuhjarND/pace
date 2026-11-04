@@ -1,0 +1,32 @@
+{
+  "tool": "Built-in Image Gen",
+  "reference": "home-reference.png",
+  "briefs": [
+    {
+      "key": "hero",
+      "prompt": "Use case: illustration-story. Create a NEW standalone production illustration matching ONLY the large hero artwork in the attached approved PACE green-gold website concept. Re-render that artwork at high resolution, not a website screenshot and not a cropped screenshot. Same friendly dark-skinned curly-haired male citizen in ivory polo, female PTSP officer in beige hijab and charcoal vest with green lanyard, sitting across a light natural wood desk together, gray laptop foreground, small white P speech-bubble in green square on laptop. Generic white courthouse with green #15803D roof and small golden #D6A526 justice scales behind them, plants, soft pale sage organic backdrop behind courthouse. Match reference faces, positions, casual conversational gestures, soft high quality 3D/clay illustration, not photorealistic. Full width desk and entire hero silhouette visible, wide landscape approx1.9:1 composition tightly framed with very little empty margin. Main subjects large. No text except tiny PTSP patch optional, no titles, no UI, no frame, no official seal. Natural skin/hair/wood materials preserved. Transparent background outside the pale sage backing and objects; no white rectangle."
+    },
+    {
+      "key": "fees",
+      "prompt": "Use case: product-mockup. NEW standalone small service illustration matching the green calculator in the bottom-left service of attached approved PACE website. One emerald green #15803D chunky desktop calculator with charcoal display, white square keys and one muted gold #D6A526 key. Soft premium3D/clay friendly material, slight3/4 left angle. Add2 tiny gold decorative ray strokes upper right as reference. Only calculator and rays, no coins, no other objects, no text, no numbers on keys, no UI, no card/background/frame. Centered square composition, full calculator visible fills90%canvas. Truly transparent background."
+    },
+    {
+      "key": "case-files",
+      "prompt": "Use case: product-mockup. NEW standalone service illustration matching gold folder in bottom second link of attached approved PACE green-gold website. One warm muted gold #D6A526 open document folder with two simple white/soft-gray paper sheets inside, embossed abstract lines only, no letters. Soft premium3D/clay friendly material, slight3/4 angle, same lighting as reference. Add2 tiny gold ray strokes upper right. Only folder and papers and rays, no text, no UI/card/frame. Square centered composition tightly filling85%canvas, entire object visible, transparent background."
+    },
+    {
+      "key": "consultation",
+      "prompt": "Use case: product-mockup. NEW standalone service illustration matching laptop chat in bottom third link of attached approved PACE green-gold website. One open small charcoal/gray laptop with a large emerald green #15803D speech bubble floating in front of screen, three white dots in bubble. Soft premium3D/clay, same angle/material/lighting as reference. Add2 tiny muted gold #D6A526 rays upper right. Only laptop bubble and rays, no people, no text, no other decoration, no UI/card/frame. Square centered composition full laptop visible, fills85%canvas, truly transparent background."
+    },
+    {
+      "key": "privacy",
+      "prompt": "Use case: product-mockup. NEW standalone service illustration matching envelope and green shield in bottom fourth link of attached approved PACE green-gold website. One closed ivory paper envelope, an emerald green #15803D rounded shield in front near top right with a muted gold #D6A526 check mark. Premium soft3D/clay same material/angle/lighting as reference. Add2 tiny muted gold ray strokes upper right. No people, no locks, no text, no UI/card/frame. Square composition tightly filled85%, whole object visible, truly transparent background."
+    },
+    {
+      "key": "logo",
+      "prompt": "Use case: precise-object-edit logo-brand. Image1 is existing production PACE logo mark, image2 is approved green-gold website style. Change ONLY orange square of Image1 to a clean solid forest emerald green #15803D, change tiny yellow accent to muted gold #D6A526. Preserve the exact white P and speech-bubble negative-space silhouette, proportions and rounded-square outline. Clean up edge speckles outside square to fully transparent. Flat vector-like finish, no texture, no gradients/shadows, no new symbol, no text, no wordmark. Entire square visible with only2%transparent margin, square canvas, true transparent background outside rounded square."
+    }
+  ],
+  "logoRepair": "Precise logo repair. Preserve EXACT existing white P / speech bubble shape, gold accent, rounded square dimensions and placement from attached green logo. Fix the green background: it must be completely solid opaque uniform #15803D from edge to edge inside the square, including the entire bottom-right region. There must be NO transparent holes inside the green square, no cloudy/marbled texture, no gradients, no dark stains, no distressed edges. Simple crisp flat vector-like logo appearance at high resolution. Transparency ONLY outside rounded square perimeter. Keep existing white mark and gold accent unchanged. No new text or objects.",
+  "logoOpaque": "Create a NEW standalone PACE application icon matching the P speech-bubble symbol seen in the attached approved website concept, NOT a screenshot. It must be an entirely OPAQUE SQUARE image with a uniform solid emerald green #15803D background covering every pixel right to all four canvas edges. NO transparency or alpha anywhere, NO rounded-square corners in the image (CSS will round it in the application). Center the very simple bold WHITE geometric P fused with a speech-bubble aperture and small muted gold #D6A526 accent by the tail, matching reference logo proportions. Very clean flat vector-like appearance, strong at32px. No texture, no mottling, no stains, no shadows, no gradients, no black, no frame, no tiny wordmark or text. White symbol with gold tail accent on an absolutely solid green square."
+}

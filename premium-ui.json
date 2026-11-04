@@ -1,0 +1,38 @@
+{
+  "profile": "product-admin",
+  "sourceRoots": [
+    "public/js",
+    "public/css",
+    "resources/views"
+  ],
+  "locale": "id-ID",
+  "canonicalMap": "UX-CONTRACT.md",
+  "requiredCapabilities": [
+    "Select/Listbox",
+    "Date",
+    "Form",
+    "Scrollbar",
+    "Toast",
+    "CRUD"
+  ],
+  "ownership": {
+    "Select/Listbox": "native",
+    "Date": "native"
+  },
+  "requiredCommands": [
+    "unit",
+    "javascript",
+    "views",
+    "design"
+  ],
+  "commands": {
+    "unit": "C:/xampp/php/php.exe vendor/phpunit/phpunit/phpunit",
+    "javascript": "node --check public/js/app.js && node --check public/js/ui.js && node --check public/js/catalog.js && node --check public/js/voice.js && node --check public/js/operations.js && node --check public/js/availability.js && node --check public/js/public-portal.js && node --check public/js/public-data.js && node --check public/js/complaints.js && node --check public/js/navigation.js",
+    "views": "C:/xampp/php/php.exe artisan view:cache",
+    "design": "npx --yes -p @google/design.md designmd lint DESIGN.md"
+  },
+  "evidence": {
+    "crudFullFlow": "tests/Feature/PtspOperationsTest.php",
+    "failurePaths": "tests/Feature/PublicAccessTest.php"
+  }
+}

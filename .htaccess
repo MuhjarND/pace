@@ -1,0 +1,11 @@
+# The XAMPP checkout is served beneath htdocs; expose only public assets/routes.
+Options -Indexes
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteRule ^(?:app|bootstrap|config|database|resources|routes|storage|tests|vendor|pace2)(?:/|$) - [F,L,NC]
+    RewriteRule ^\.(?!well-known/) - [F,L]
+    RewriteRule ^(?:artisan|composer\.(?:json|lock)|package(?:-lock)?\.json|phpunit\.xml|server\.php|webpack\.mix\.js)$ - [F,L,NC]
+</IfModule>
+<FilesMatch "^(?:\.env.*|.*\.sql|.*\.log)$">
+    Require all denied
+</FilesMatch>

@@ -1,0 +1,6 @@
+{
+  "tool": "Built-in Image Gen",
+  "reference": "home-reference.png",
+  "prompt": "Create a NEW standalone PACE application icon matching the P speech-bubble symbol seen in the attached approved website concept, NOT a screenshot. It must be an entirely OPAQUE SQUARE image with a uniform solid emerald green #15803D background covering every pixel right to all four canvas edges. NO transparency or alpha anywhere, NO rounded-square corners in the image (CSS will round it in the application). Center the very simple bold WHITE geometric P fused with a speech-bubble aperture and small muted gold #D6A526 accent by the tail, matching reference logo proportions. Very clean flat vector-like appearance, strong at32px. No texture, no mottling, no stains, no shadows, no gradients, no black, no frame, no tiny wordmark or text. White symbol with gold tail accent on an absolutely solid green square.",
+  "output": "public/images/pace-logo-green-source.png"
+}
