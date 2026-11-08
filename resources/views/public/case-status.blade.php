@@ -1,10 +1,10 @@
 @extends('layouts.public')
 @section('title','Cek status perkara dan akta cerai')
 @section('content')
-@include('public.partials.page-heading', ['heading'=>'Pantau perkara dan akta cerai Anda.', 'description'=>'Lihat perkembangan perkara dan catatan pengambilan akta cerai dengan satu pencarian, tanpa login.', 'icon'=>'far fa-file-lines','illustration'=>'case-files'])
-<div class="citizen-columns">
+@include('public.partials.page-heading', ['heading'=>'Status perkara & akta cerai', 'description'=>'Periksa perkembangan perkara dan akta cerai dalam satu pencarian.', 'icon'=>'far fa-file-lines','illustration'=>'case-files'])
+<div class="citizen-columns pace-form-layout pace-case-layout">
     <section class="citizen-panel" aria-labelledby="caseFormHeading">
-        <h2 id="caseFormHeading">Cek status perkara dan akta cerai</h2>
+        <h2 id="caseFormHeading">Cari perkara Anda</h2>
         <p class="citizen-description">Siapkan nomor perkara lengkap dari bukti pendaftaran Anda.</p>
         <form method="POST" action="{{ route('public.cases.lookup') }}#hasil" data-busy-message="Memeriksa status perkara dan akta cerai…" novalidate>
             @csrf
@@ -22,12 +22,10 @@
             <p class="field-hint citizen-source">Hasil berupa ringkasan status; tidak menampilkan identitas atau dokumen para pihak.</p>
         </form>
     </section>
-    <aside class="citizen-panel citizen-guide"><h2>Satu pencarian, dua informasi</h2>
-        @include('public.partials.guide-steps', ['steps'=>[
-            ['Gunakan pengadilan yang sesuai','Pilih pengadilan yang menangani perkara, sesuai bukti pendaftaran.'],
-            ['Lihat perkara dan akta cerai','Untuk perkara perceraian, periksa penerbitan serta catatan pengambilan akta masing-masing pihak.'],
-            ['Tanyakan kepada PTSP','Petugas pengadilan terkait membantu menjelaskan status dan langkah berikutnya.'],
-        ]])
+    <aside class="citizen-panel citizen-guide pace-case-guide"><h2>Informasi yang dapat dilihat</h2>
+<div class="pace-info-row"><i class="fas fa-scale-balanced" aria-hidden="true"></i><div><h3>Status perkara</h3><p>Tahapan dan perkembangan terakhir.</p></div></div>
+<div class="pace-info-row"><i class="far fa-file-lines" aria-hidden="true"></i><div><h3>Akta cerai</h3><p>Penerbitan dan catatan pengambilan akta.</p></div></div>
+<div class="pace-aside-divider"><h3>Perlu penjelasan?</h3><p>Petugas pengadilan terkait dapat membantu menjelaskan status dan langkah berikutnya.</p><a href="{{ route('public.consult',array_filter(['unit'=>optional($unit)->id])) }}">Tanyakan kepada PTSP <i class="fas fa-arrow-right" aria-hidden="true"></i></a></div>
     </aside>
 </div>
 @if($result)

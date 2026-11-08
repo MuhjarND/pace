@@ -11,9 +11,10 @@ class GuestTicket extends Model
     public function meeting() { return $this->belongsTo(Meeting::class); }
     public function room() { return $this->belongsTo(ChatRoom::class, 'chat_room_id'); }
     public function notification() { return $this->hasOne(WhatsappNotification::class); }
+    public function journey() { return $this->hasOne(ConsultationJourney::class); }
     public function inviteActive()
     {
-        return $this->expires_at->gt(now()) && $this->meeting && in_array($this->meeting->status, ['scheduled', 'started'], true)
+        return $this->expires_at->gt(now()) && $this->meeting && !$this->meeting->isMace() && in_array($this->meeting->status, ['scheduled', 'started'], true)
             && in_array($this->meeting->verification_status, ['immediate', 'verified'], true);
     }
 }

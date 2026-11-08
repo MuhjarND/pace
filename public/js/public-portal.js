@@ -91,9 +91,11 @@
                 const data = await response.json();
                 ticket.querySelector('[data-queue-label]').textContent = data.queue.status;
                 ticket.querySelector('[data-verification]').textContent = data.verification;
-                ticket.querySelector('[data-queue-ahead]').textContent = data.queue.position ? 'Ada ' + data.queue.ahead + ' antrean sebelum Anda.' : 'Antrean tersedia setelah jadwal diverifikasi dan tiba waktunya.';
-                ticket.querySelector('[data-wa-status]').textContent = data.notification ? 'WhatsApp: ' + data.notification : 'WhatsApp dikirim saat petugas memanggil Anda.';
-                ticket.querySelector('[data-ticket-join]').disabled = !data.can_join;
+                ticket.querySelector('[data-queue-ahead]').textContent = data.queue.position ? 'Ada ' + data.queue.ahead + ' antrean sebelum Anda.' : (['Selesai', 'Dibatalkan'].includes(data.queue.status) ? 'Anda sudah tidak berada dalam antrean aktif.' : 'Antrean tersedia setelah jadwal diverifikasi dan tiba waktunya.');
+                const waStatus = ticket.querySelector('[data-wa-status]');
+                if (waStatus) waStatus.textContent = data.notification ? 'WhatsApp: ' + data.notification : 'WhatsApp dikirim saat petugas memanggil Anda.';
+                const join = ticket.querySelector('[data-ticket-join]');
+                if (join) join.disabled = !data.can_join;
                 feedback.textContent = 'Status terbaru sudah dimuat. Diperiksa otomatis setiap 10 detik.';
             } catch (error) { feedback.textContent = error.message || 'Status belum dapat dimuat. Coba lagi.'; }
             finally {clearTimeout(timeout); busy = false; refresh.disabled = false;}

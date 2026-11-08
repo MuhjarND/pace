@@ -19,4 +19,6 @@
 <section class="citizen-service-gallery" aria-label="Layanan untuk Anda"><nav class="citizen-art-links" aria-label="Pilih layanan">
 @include('public.partials.service-links',['withIllustrations'=>true,'withDescriptions'=>false,'excludeFinder'=>true,'preserveContext'=>true])
 </nav></section>
+@include('public.partials.statistics')
 @endsection
+@section('styles')<link rel="stylesheet" href="{{ asset('css/public-statistics.css') }}?v={{ filemtime(public_path('css/public-statistics.css')) }}">@endsection

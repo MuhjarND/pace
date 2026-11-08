@@ -29,7 +29,9 @@ class PublicDataController extends Controller
         $schedules = FeeSchedule::where('work_unit_id',$unit->id)->orderByDesc('id')->paginate(10,['*'],'fee_page')->appends($request->except('fee_page'));
         $editing = $request->filled('edit') ? FeeSchedule::where('work_unit_id',$unit->id)->with('radii.region')->findOrFail($request->edit) : null;
         $fonnteError = app(\App\Services\FonnteService::class)->configurationError();
-        return view('operations.public-data',compact('units','unit','maps','schedules','editing','actor','fonnteError'));
+        $travelOrigins = $actor->canManageMasterData() ? Region::whereNotNull('latitude')->whereNotNull('longitude')->orderBy('name')
+            ->paginate(10,['code','name','latitude','longitude','travel_source_url'],'origin_page')->appends($request->except('origin_page')) : null;
+        return view('operations.public-data',compact('units','unit','maps','schedules','editing','actor','fonnteError','travelOrigins'));
     }
     public function territory(Request $request)
     {
@@ -42,6 +44,21 @@ class PublicDataController extends Controller
             AdminActivityLog::create(['actor_id'=>auth()->id(),'action'=>'territory.saved','target_type'=>'territory','target_id'=>$map->id,'changes'=>$data]);
         });
         return redirect()->route('operations.public-data')->with('success','Pemetaan wilayah disimpan. Hanya pemetaan terverifikasi yang digunakan pencarian publik.');
+    }
+    public function travelOrigin(Request $request)
+    {
+        abort_unless($this->actor()->canManageMasterData(),403);
+        $data=$request->validate(['region_code'=>'required|string|exists:regions,code',
+            'latitude'=>'required|numeric|between:-90,90','longitude'=>'required|numeric|between:-180,180',
+            'source_url'=>'required|url|max:1000|regex:~\Ahttps://~']);
+        $region=Region::findOrFail($data['region_code']);
+        if ((int)$region->level !== 4) throw ValidationException::withMessages(['region_code'=>'Gunakan kode kampung / kelurahan untuk titik acuan domisili.']);
+        DB::transaction(function()use($data,$region){
+            $region->update(['latitude'=>$data['latitude'],'longitude'=>$data['longitude'],'travel_source_url'=>$data['source_url']]);
+            AdminActivityLog::create(['actor_id'=>auth()->id(),'action'=>'travel_origin.saved','target_type'=>'region',
+                'target_id'=>(int)str_replace('.','',$region->code),'changes'=>$data]);
+        });
+        return redirect()->route('operations.public-data')->with('success','Titik acuan domisili disimpan. Jalankan pembaruan perjalanan untuk data yang menunggu acuan.');
     }
     public function tariff(Request $request)
     {

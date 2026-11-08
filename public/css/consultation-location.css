@@ -1,0 +1,3 @@
+.consultation-location{margin:0 0 22px;padding:18px 20px;background:var(--surface-brand);border:1px solid #dfe8df;border-radius:16px}
+.citizen-consult-form .consultation-location h2{font-size:16px;margin:0 0 6px}.consultation-location>.field-hint{margin:8px 0 14px;line-height:1.6}.consultation-location .form-group{margin-bottom:12px}
+@media(max-width:540px){.consultation-location{padding:16px}}

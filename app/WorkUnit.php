@@ -6,7 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class WorkUnit extends Model
 {
-    protected $fillable = ['name', 'code', 'is_active', 'address', 'phone', 'schedule_enabled', 'daily_quota', 'website', 'public_requirements'];
+    protected $fillable = ['name', 'code', 'is_active', 'address', 'phone', 'schedule_enabled', 'daily_quota', 'website', 'public_requirements',
+        'latitude', 'longitude', 'travel_km_per_liter', 'travel_fuel_price'];
     protected $casts = ['is_active' => 'boolean', 'schedule_enabled' => 'boolean', 'daily_quota' => 'integer'];
 
     public static function activeNames()

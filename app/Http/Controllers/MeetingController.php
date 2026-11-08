@@ -152,7 +152,7 @@ class MeetingController extends Controller
     {
         return $this->locked($id, function ($meeting) {
             abort_unless($meeting->canManage(auth()->user()), 403);
-            abort_unless($meeting->canJoin(auth()->user()) && $this->queues->state($meeting)['ahead'] === 0, 422, 'Selesaikan antrean sebelumnya terlebih dahulu.');
+            abort_unless($meeting->canServe(auth()->user()) && $this->queues->state($meeting)['ready'], 422, 'Selesaikan antrean sebelumnya terlebih dahulu.');
             abort_if($meeting->guestTicket && !$meeting->called_at, 422, 'Panggil tamu sebelum memulai layanan.');
             $meeting->markStarted();
             return $this->actionResult('Konsultasi sedang dilayani.');
@@ -175,7 +175,7 @@ class MeetingController extends Controller
     {
         return $this->locked($id, function ($meeting) {
             abort_unless($meeting->canManage(auth()->user()), 403);
-            abort_unless($meeting->canJoin(auth()->user()) && $this->queues->state($meeting)['ahead'] === 0, 422, 'Antrean ini belum dapat diselesaikan.');
+            abort_unless($meeting->canServe(auth()->user()) && $this->queues->state($meeting)['ready'], 422, 'Antrean ini belum dapat diselesaikan.');
             abort_if($meeting->guestTicket && $meeting->status !== 'started', 422, 'Mulai layanan sebelum menandai selesai.');
             $meeting->update(['status' => 'ended', 'completed_at' => now()]);
             return $this->actionResult('Konsultasi selesai. Antrean berikutnya dapat dilayani.');

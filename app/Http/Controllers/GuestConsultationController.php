@@ -27,19 +27,24 @@ class GuestConsultationController extends Controller
     {
         $data = $request->validate([
             'request_key'=>'required|string|size:48', 'work_unit_id'=>'required|integer|exists:work_units,id',
-            'region_code'=>'nullable|string|exists:regions,code', 'name'=>'required|string|min:2|max:100', 'channel'=>'required|in:chat,meet',
+            'region_code'=>'nullable|string|exists:regions,code', 'name'=>'required|string|min:2|max:100', 'channel'=>'required|in:chat,meet,mace',
             'phone'=>['nullable','string','regex:/\A\+?[0-9 ()-]{9,22}\z/'], 'topic'=>'required|string|min:3|max:255',
             'consent'=>'required|accepted', 'consultation_date'=>'required_if:channel,meet|nullable|date_format:Y-m-d',
             'consultation_time'=>['required_if:channel,meet','nullable','regex:/\A(now|([01][0-9]|2[0-3]):[0-5][0-9])\z/'],
+            'origin_region_code'=>'nullable|string|exists:regions,code',
         ]);
         abort_unless(hash_equals((string)$request->session()->get('public_booking_nonce'), $data['request_key']), 419);
+        $originRegion = !empty($data['origin_region_code']) ? Region::findOrFail($data['origin_region_code']) : null;
+        if ($originRegion && (int)$originRegion->level !== 4) {
+            throw ValidationException::withMessages(['origin_region_code'=>'Pilih wilayah domisili sampai kampung / kelurahan.']);
+        }
         $requestKey = hash('sha256', $data['request_key']);
         $phone = preg_replace('/[^0-9]/', '', $data['phone'] ?? '');
         if (strpos($phone, '0') === 0) $phone = '62'.substr($phone, 1);
         if (($phone || $data['channel'] === 'meet') && !preg_match('/\A628[0-9]{7,11}\z/', $phone)) {
             throw ValidationException::withMessages(['phone'=>'Masukkan nomor WhatsApp Indonesia, misalnya 0812… atau 62812….']);
         }
-        $start = null;
+        $start = $data['channel'] === 'mace' ? now()->copy() : null;
         if ($data['channel'] === 'meet') {
             $zone = config('ptsp.timezone'); $today = now()->timezone($zone);
             $date = Carbon::createFromFormat('!Y-m-d', $data['consultation_date'], $zone);
@@ -50,7 +55,7 @@ class GuestConsultationController extends Controller
             $start = $data['consultation_time'] === 'now' ? now()->copy() : Carbon::createFromFormat('!Y-m-d H:i', $data['consultation_date'].' '.$data['consultation_time'], $zone)->utc();
         }
         try {
-        $ticket = DB::transaction(function () use ($data, $phone, $start, $requestKey, $request) {
+        $ticket = DB::transaction(function () use ($data, $phone, $start, $requestKey, $request, $originRegion) {
             $unit = WorkUnit::whereKey($data['work_unit_id'])->lockForUpdate()->firstOrFail();
             if ($old = GuestTicket::where('request_key', $requestKey)->first()) return $old;
             abort_unless($unit->is_active, 422, 'Satker tidak menerima konsultasi baru.');
@@ -60,9 +65,16 @@ class GuestConsultationController extends Controller
             }
             $setting = null;
             if ($start) {
-                $setting = ConsultationSetting::where('work_unit', $unit->name)->lockForUpdate()->first();
-                if (!$setting || !GoogleMeetUrl::normalize($setting->join_url)) throw ValidationException::withMessages(['work_unit_id'=>'Tautan Google Meet belum disiapkan satker. Pilih Chat PTSP.']);
-                app(ServiceHoursService::class)->assertBookable($unit, $start, $data['consultation_time'] === 'now');
+                if ($data['channel'] === 'meet') {
+                    $setting = ConsultationSetting::where('work_unit', $unit->name)->lockForUpdate()->first();
+                    if (!$setting || !GoogleMeetUrl::normalize($setting->join_url)) throw ValidationException::withMessages(['work_unit_id'=>'Tautan Google Meet belum disiapkan satker. Pilih Chat PTSP.']);
+                }
+                try {
+                    app(ServiceHoursService::class)->assertBookable($unit, $start, $data['channel'] === 'mace' || $data['consultation_time'] === 'now');
+                } catch (ValidationException $e) {
+                    if ($data['channel'] !== 'mace') throw $e;
+                    throw ValidationException::withMessages(['channel'=>'Antrean Mace belum tersedia. '.$e->validator->errors()->first()]);
+                }
             }
             // A fresh principal per ticket preserves legacy staff chat/meeting relations without phone login or history reuse.
             $user = new User(['name'=>$data['name'], 'email'=>Str::uuid().'@ticket.invalid', 'phone'=>null,
@@ -71,15 +83,15 @@ class GuestConsultationController extends Controller
             $secret = Str::random(64);
             $ticket = new GuestTicket(['public_id'=>Str::random(24), 'request_key'=>$requestKey, 'user_id'=>$user->id,
                 'phone'=>$phone ?: null, 'region_code'=>$data['region_code'] ?? null, 'consented_at'=>now(),
-                'invite_hash'=>$start ? hash('sha256', $secret) : null, 'invite_secret'=>$start ? Crypt::encryptString($secret) : null,
+                'invite_hash'=>$data['channel'] === 'meet' ? hash('sha256', $secret) : null, 'invite_secret'=>$data['channel'] === 'meet' ? Crypt::encryptString($secret) : null,
                 'expires_at'=>($start ?: now())->copy()->addDays(7),
                 'context'=>(int)$request->session()->get('fee_context.work_unit_id') === (int)$unit->id ? $request->session()->get('fee_context') : null]);
             if ($start) {
                 $date = $start->copy()->timezone(config('ptsp.timezone'))->toDateString();
                 $number = (int)Meeting::where('work_unit', $unit->name)->where('queue_date', $date)->max('queue_number') + 1;
-                $url = GoogleMeetUrl::normalize($setting->join_url);
-                $meeting = Meeting::create(['user_id'=>$user->id, 'work_unit'=>$unit->name, 'topic'=>$data['topic'], 'start_time'=>$start,
-                    'duration'=>config('ptsp.consultation_duration_minutes'), 'join_url'=>$url, 'meeting_id'=>basename(parse_url($url, PHP_URL_PATH)),
+                $url = $setting ? GoogleMeetUrl::normalize($setting->join_url) : null;
+                $meeting = Meeting::create(['user_id'=>$user->id, 'work_unit'=>$unit->name, 'channel'=>$data['channel'], 'topic'=>$data['topic'], 'start_time'=>$start,
+                    'duration'=>config('ptsp.consultation_duration_minutes'), 'join_url'=>$url, 'meeting_id'=>$url ? basename(parse_url($url, PHP_URL_PATH)) : null,
                     'status'=>'scheduled', 'verification_status'=>$start->lte(now()) ? 'immediate' : 'pending', 'queue_date'=>$date, 'queue_number'=>$number]);
                 $ticket->meeting_id = $meeting->id;
             } else {
@@ -88,6 +100,7 @@ class GuestConsultationController extends Controller
                 $ticket->chat_room_id = $room->id;
             }
             $ticket->save();
+            app(\App\Services\JourneyRoutingService::class)->record($ticket, $unit, $originRegion);
             return $ticket;
         });
         } catch (\Illuminate\Database\QueryException $e) {
@@ -97,6 +110,8 @@ class GuestConsultationController extends Controller
         $owned = $request->session()->get('guest_tickets', []);
         $owned[$ticket->id] = $ticket->public_id;
         $request->session()->put('guest_tickets', $owned);
+        // External routing runs after commit, without holding the court's booking lock.
+        if ($ticket->journey) app(\App\Services\JourneyRoutingService::class)->resolve($ticket->journey);
         // Keep the nonce until the next explicit new request so browser retries remain idempotent.
         return redirect()->route('public.ticket', $ticket->public_id)->with('success', 'Konsultasi tersimpan. Simpan halaman tiket ini untuk memantau layanan.');
     }
@@ -113,8 +128,9 @@ class GuestConsultationController extends Controller
     {
         $ticket = $this->own($request, $id)->load('user','meeting','room','notification');
         $queue = $ticket->meeting ? app(ConsultationQueueService::class)->state($ticket->meeting) : null;
+        $unit = $ticket->meeting && $ticket->meeting->isMace() ? WorkUnit::where('name', $ticket->user->work_unit)->first() : null;
         $messages = $ticket->room ? $ticket->room->messages()->with('sender')->orderByDesc('id')->limit(100)->get()->reverse() : collect();
-        return response()->view('public.ticket', compact('ticket','queue','messages'))->header('Cache-Control','no-store')->header('Referrer-Policy','no-referrer');
+        return response()->view('public.ticket', compact('ticket','queue','messages','unit'))->header('Cache-Control','no-store')->header('Referrer-Policy','no-referrer');
     }
 
     public function state(Request $request, $id)

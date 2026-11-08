@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Meeting extends Model
 {
     protected $fillable = ['user_id', 'admin_id', 'topic', 'start_time', 'duration', 'meeting_id', 'join_url', 'status',
-        'work_unit', 'slot_id', 'verification_status', 'verified_by', 'verified_at', 'verification_note', 'completed_at', 'queue_date', 'queue_number'];
+        'work_unit', 'channel', 'slot_id', 'verification_status', 'verified_by', 'verified_at', 'verification_note', 'completed_at', 'queue_date', 'queue_number'];
 
     protected $casts = [
         'start_time' => 'datetime',
@@ -56,10 +56,19 @@ class Meeting extends Model
 
     public function canJoin(User $user)
     {
+        return !$this->isMace() && $this->canServe($user);
+    }
+
+    public function isMace() { return $this->channel === 'mace'; }
+
+    public function channelLabel() { return $this->isMace() ? 'Konsultasi Bersama Mace (offline)' : 'Google Meet'; }
+
+    public function canServe(User $user)
+    {
         if ((int) $this->user_id !== (int) $user->id && !$this->canManage($user)) {
             return false;
         }
-        if (!in_array($this->status, ['scheduled', 'started'], true) || !$this->hasJoinUrl()) {
+        if (!in_array($this->status, ['scheduled', 'started'], true) || (!$this->isMace() && !$this->hasJoinUrl())) {
             return false;
         }
         return in_array($this->verification_status, ['verified', 'immediate'], true)

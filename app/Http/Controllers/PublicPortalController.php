@@ -5,6 +5,7 @@ use App\Region;
 use App\WorkUnit;
 use App\Services\CourtFinder;
 use App\Services\FeeEstimator;
+use App\Services\PublicStatisticsService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -14,14 +15,17 @@ class PublicPortalController extends Controller
 {
     public function index(Request $request, CourtFinder $finder)
     {
-        $request->validate(['region'=>($request->has('region') ? 'required' : 'nullable').'|string|exists:regions,code'], [
+        $request->validate(['region'=>($request->has('region') ? 'required' : 'nullable').'|string|exists:regions,code',
+            'stats_unit'=>'nullable|integer|exists:work_units,id','stats_mode'=>'nullable|in:live,demo','stats_chart'=>'nullable|in:channels,statuses'], [
             'region.required'=>'Pilih provinsi untuk mulai mencari pengadilan.',
             'region.string'=>'Pilihan wilayah tidak valid. Pilih ulang melalui formulir.',
             'region.exists'=>'Wilayah belum terdaftar. Pilih wilayah lain atau hubungi PTSP.',
         ]);
         $region = $request->filled('region') ? Region::findOrFail($request->region) : null;
         $mapping = $region ? $finder->find($region) : null;
-        return view('public.finder', compact('region', 'mapping'));
+        $statisticsService = app(PublicStatisticsService::class);
+        $statistics = $statisticsService->snapshot($request->input('stats_unit'), $request->input('stats_mode') ?: $statisticsService->defaultMode());
+        return view('public.finder', compact('region', 'mapping', 'statistics'));
     }
 
     public function regions(Request $request)
@@ -34,7 +38,7 @@ class PublicPortalController extends Controller
 
     public function consult(Request $request, CourtFinder $finder)
     {
-        $request->validate(['region'=>'nullable|string|exists:regions,code', 'unit'=>'nullable|integer|exists:work_units,id', 'case_number'=>'nullable|string|max:100']);
+        $request->validate(['region'=>'nullable|string|exists:regions,code', 'unit'=>'nullable|integer|exists:work_units,id', 'case_number'=>'nullable|string|max:100', 'channel'=>'nullable|in:chat,meet,mace']);
         $region = $request->filled('region') ? Region::findOrFail($request->region) : null;
         $mapping = $region ? $finder->find($region) : null;
         $units = WorkUnit::where('is_active', true)->orderBy('id')->get();
@@ -48,6 +52,14 @@ class PublicPortalController extends Controller
         $tickets = \App\GuestTicket::whereIn('id', array_keys($request->session()->get('guest_tickets', [])))
             ->where('expires_at', '>', now())->with('meeting', 'room')->orderByDesc('id')->take(10)->get();
         return response()->view('public.consult', compact('region', 'mapping', 'units', 'unit', 'nonce', 'localNow', 'tickets', 'caseContext'))->header('Cache-Control', 'no-store');
+    }
+
+    public function offline($id)
+    {
+        $unit = WorkUnit::where('is_active', true)->findOrFail($id);
+        $hours = $unit->schedule_enabled ? $unit->hours()->where('is_open', true)->orderBy('weekday')->get() : collect();
+        $holidays = $unit->holidays()->where('date', '>=', now()->timezone(config('ptsp.timezone'))->toDateString())->orderBy('date')->get();
+        return view('public.offline-consult', compact('unit', 'hours', 'holidays'));
     }
 
     public function availability(Request $request, $id)

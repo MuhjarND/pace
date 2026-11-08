@@ -1,6 +1,10 @@
 <?php
 
 return [
+    'travel' => [
+        'routing_url' => env('TRAVEL_ROUTING_URL', 'https://router.project-osrm.org'),
+        'routing_profile' => env('TRAVEL_ROUTING_PROFILE', 'driving'),
+    ],
     'kasuari' => [
         'case_status_url' => env('KASUARI_CASE_STATUS_URL'),
         'token' => env('KASUARI_CASE_STATUS_TOKEN'),

@@ -46,6 +46,10 @@ class AdminWorkUnitController extends Controller
             'code' => ['required', 'string', 'max:40', 'regex:/^[A-Za-z0-9._-]+$/', Rule::unique('work_units')->ignore($id)],
             'website' => 'nullable|url|max:500|regex:~\Ahttps://~', 'public_requirements' => 'nullable|string|max:3000',
             'is_active' => 'required|boolean', 'address' => 'nullable|string|max:500', 'phone' => ['nullable', 'regex:/^[0-9+() .-]{6,30}$/'],
+            'latitude'=>'required_with:longitude|nullable|numeric|between:-90,90',
+            'longitude'=>'required_with:latitude|nullable|numeric|between:-180,180',
+            'travel_km_per_liter'=>'nullable|numeric|min:0.1|max:1000',
+            'travel_fuel_price'=>'nullable|integer|min:1|max:1000000',
         ]);
         $unit = DB::transaction(function () use ($id, $data) {
             $unit = $id ? WorkUnit::whereKey($id)->lockForUpdate()->firstOrFail() : new WorkUnit;
@@ -53,9 +57,10 @@ class AdminWorkUnitController extends Controller
             if ($id && $unit->name !== $data['name']) {
                 throw ValidationException::withMessages(['name' => 'Nama satker merupakan identitas tetap agar riwayat pelayanan tetap terhubung.']);
             }
-            $before = $id ? $unit->only(['code', 'is_active', 'address', 'phone']) : null;
+            $auditFields = ['code', 'is_active', 'address', 'phone', 'latitude', 'longitude', 'travel_km_per_liter', 'travel_fuel_price'];
+            $before = $id ? $unit->only($auditFields) : null;
             $unit->fill($data)->save();
-            AdminActivityLog::create(['actor_id' => auth()->id(), 'action' => $id ? 'work_unit.updated' : 'work_unit.created', 'target_type' => 'work_unit', 'target_id' => $unit->id, 'changes' => ['before' => $before, 'after' => $unit->only(['code', 'is_active', 'address', 'phone'])]]);
+            AdminActivityLog::create(['actor_id' => auth()->id(), 'action' => $id ? 'work_unit.updated' : 'work_unit.created', 'target_type' => 'work_unit', 'target_id' => $unit->id, 'changes' => ['before' => $before, 'after' => $unit->only($auditFields)]]);
             return $unit;
         });
         return redirect()->route('admin.work-units.edit', $unit)->with('success', 'Satuan kerja disimpan. Daftar satker langsung tersedia pada pendaftaran dan penempatan akun.');

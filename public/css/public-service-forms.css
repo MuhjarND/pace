@@ -1,0 +1,158 @@
+/* PACE service forms — docs/design/pace/interiors-v2 */
+.pace-service-page{background:#fff;color:#183328}
+.pace-service-page .pace-navigation a[aria-current=page]:after{background:#d6a526}
+.pace-service-page .citizen-main{max-width:1320px;padding:0 24px 32px}
+.pace-service-page .citizen-task-heading.citizen-task-illustrated{padding:18px 12px;margin:6px 0 16px;gap:32px;min-height:174px;align-items:center}
+.pace-service-page .citizen-task-heading.citizen-task-illustrated h1{font-size:46px;line-height:1.2;letter-spacing:-.045em;margin:0 0 17px;max-width:none}
+.pace-service-page .citizen-task-heading h1:after{content:'';display:block;width:86px;height:5px;background:#d6a526;border-radius:3px;margin-top:15px}
+.pace-service-page .citizen-task-heading.citizen-task-illustrated p{font-size:17px;line-height:1.6;max-width:920px;margin:0;color:#53615b}
+.pace-service-page .citizen-task-illustrated>.ui-illustration{width:160px;height:148px;object-fit:contain}
+.pace-service-page .pace-form-layout{display:grid;grid-template-columns:minmax(0,2.45fr) minmax(280px,1fr);align-items:stretch;gap:24px;margin-bottom:24px}
+.pace-service-page .pace-case-layout{grid-template-columns:minmax(0,1.85fr) minmax(300px,1fr)}
+.pace-service-page .citizen-panel{padding:30px;border:1px solid #c8ddce;border-radius:22px;box-shadow:0 4px 14px rgba(24,51,40,.065);min-width:0}
+.pace-service-page .citizen-panel h2{font-family:var(--font-display);font-size:28px;line-height:1.3;letter-spacing:-.035em;margin:0 0 12px;color:#183328}
+.pace-service-page .citizen-description{color:#5c6962;font-size:14px;line-height:1.65;margin:0 0 24px}
+.pace-service-page .form-group{margin-bottom:16px;min-width:0}
+.pace-service-page .form-label{font-size:14px;font-weight:600;line-height:1.5;color:#273e32;margin-bottom:8px}
+.pace-service-page .form-control{min-height:48px;font-family:var(--font-body);font-size:16px;line-height:1.5;padding:11px 13px;border:1px solid #b9c9bf;border-radius:10px;background-color:#fff;color:#183328;max-width:100%;width:100%}
+.pace-service-page select.form-control{padding-right:32px;text-overflow:ellipsis}
+.pace-service-page .form-control:disabled{background:#f3f6f3;color:#7a847e;border-color:#dce5dd}
+.pace-service-page .form-control:focus{border-color:#15803d;box-shadow:0 0 0 3px rgba(21,128,61,.13)}
+.pace-service-page textarea.form-control{min-height:96px;resize:vertical}
+.pace-service-page .field-hint{font-size:13px;line-height:1.65;color:#5c6962;margin:8px 0 0}
+.pace-service-page .citizen-field-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 20px}
+.pace-service-page .pace-form-section{margin-top:23px}
+.pace-service-page .pace-form-section>h2,.pace-service-page .pace-form-section>h3{display:flex;align-items:center;gap:12px;font-family:var(--font-display);font-size:18px;font-weight:700;letter-spacing:-.025em;color:#166534;line-height:1.4;margin:0 0 14px}
+.pace-service-page .pace-form-section>h2:after,.pace-service-page .pace-form-section>h3:after{content:'';height:1px;background:#a9c9b0;flex:1}
+.pace-service-page .pace-form-section>.field-hint{margin:-6px 0 18px}
+.pace-service-page .btn{border-radius:10px;min-height:46px;padding:11px 18px;font-weight:600;font-size:14px;line-height:1.5;gap:12px}
+.pace-service-page .btn-primary{background:#15803d;border-color:#15803d;color:#fff}
+.pace-service-page .btn-primary:hover{background:#166534;border-color:#166534}
+.pace-service-page .btn-secondary{background:#fff;border-color:#77a484;color:#166534}
+.pace-service-page .btn-secondary:hover{background:#eff7f0;border-color:#166534}
+.pace-service-page .citizen-primary{width:100%;min-height:50px;font-size:16px;margin-top:10px;justify-content:center}
+.pace-service-page .pace-form-actions{justify-content:space-between;margin-top:22px;gap:12px}
+.pace-service-page .citizen-guide{background:#f0f7f0;border-color:#d1e5d3;box-shadow:0 4px 14px rgba(24,51,40,.045)}
+.pace-service-page .citizen-guide>p,.pace-service-page .citizen-guide p{font-size:14px;line-height:1.7;color:#526359}
+.pace-service-page .citizen-guide h3{font-size:17px;line-height:1.4;color:#183328;margin:0 0 9px}
+.pace-service-page .citizen-guide a:not(.btn){color:#166534;font-size:14px;font-weight:600;text-underline-offset:4px}
+.pace-service-page .pace-aside-divider{margin-top:26px;padding-top:24px;border-top:1px solid #c4d9c7}
+.pace-service-page .pace-aside-action{display:flex;width:100%;margin-top:20px;justify-content:center}
+.pace-service-page .pace-gold-note{background:#fcf7e8;border:1px solid #eedb9c;border-radius:16px;padding:20px;margin-top:26px}
+.pace-service-page .pace-gold-note h3{color:#84620d}.pace-service-page .pace-gold-note p{font-size:13px;margin:0;color:#685c37}
+.pace-service-page .citizen-guide-steps{margin:24px 0 0;padding:0;list-style:none;gap:0}
+.pace-service-page .citizen-guide-steps li{position:relative;padding:0 0 0 44px;min-height:38px;margin-bottom:26px;display:block}
+.pace-service-page .citizen-guide-steps li:last-child{margin-bottom:0}
+.pace-service-page .citizen-guide-number{position:absolute;left:0;top:0;width:30px;height:30px;background:#166534;color:#fff;border-radius:50%;font-size:14px;display:grid;place-items:center}
+.pace-service-page .citizen-guide li:not(:last-child):after{display:block;left:14px;top:38px;bottom:-18px;background:#bdd4c2}
+.pace-service-page .citizen-guide-steps strong{font-size:15px;line-height:1.5;display:block;margin:0 0 5px;color:#183328}
+.pace-service-page .citizen-guide-steps p{margin:0;font-size:13px;line-height:1.65}
+.pace-service-page #feeParties{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+.pace-service-page .citizen-party{padding:18px 16px 16px;border:1px solid #d3e2d6;border-radius:14px;margin:0;min-width:0;background:#fff}
+.pace-service-page .citizen-party legend{font-size:15px;font-weight:700;color:#166534;padding:5px 12px;border-radius:6px;background:#edf5ee;width:auto;margin:0 0 8px}
+.pace-service-page .citizen-party .citizen-field-grid{gap:0 12px}
+.pace-service-page .citizen-party .form-label{font-size:12px}.pace-service-page .citizen-party .form-control{font-size:14px;padding-left:10px}
+.pace-service-page .citizen-party .form-group{margin-bottom:16px}
+.pace-service-page .citizen-party .btn-sm{min-height:38px;font-size:12px;padding:8px 12px}
+.pace-service-page .pace-fee-result{background:#fcf7e8;border-color:#eedb9c}
+.pace-service-page .pace-fee-result .pace-aside-divider{border-color:#e4d5a7}
+.pace-service-page .pace-fee-result>h3{border-top:1px solid #e4d5a7;padding-top:23px;margin-top:24px}
+.pace-service-page .pace-fee-result .citizen-cost-lines li{padding:12px 0;min-height:0;margin:0;gap:12px;display:flex;justify-content:space-between;font-size:13px}
+.pace-service-page .pace-fee-result .citizen-cost-lines li:before,.pace-service-page .pace-fee-result .citizen-cost-lines li:after{display:none}
+.pace-service-page .pace-fee-result .citizen-cost-lines li strong{font-size:13px;white-space:nowrap}
+.pace-service-page .pace-estimate-empty{padding:16px 0 8px;text-align:center}
+.pace-service-page .pace-estimate-empty i{display:block;font-size:37px;color:#b89027;margin:0 0 20px}
+.pace-service-page .pace-estimate-empty strong{font-size:36px;color:#8d7333}.pace-service-page .pace-estimate-empty p{margin:6px 0 0}
+.pace-service-page .pace-info-row{display:flex;gap:16px;background:#fff;border:1px solid #dce9dd;border-radius:13px;padding:19px 17px;margin-top:16px}
+.pace-service-page .pace-info-row>i{color:#15803d;font-size:23px;padding-top:3px;width:26px;flex-shrink:0}
+.pace-service-page .pace-info-row h3{margin:0 0 5px;font-size:17px}.pace-service-page .pace-info-row p{margin:0;font-size:14px}
+.pace-service-page .citizen-source{border-top:1px solid #e0e9e1;padding-top:16px;margin-top:12px}
+.pace-service-page .citizen-support{background:#fcf7e8;border:1px solid #eedb9c;color:#183328;border-radius:18px;padding:23px 28px}
+.pace-service-page .citizen-support h2{color:#183328;font-size:21px}.pace-service-page .citizen-support p{color:#6e664f;font-size:14px}
+.pace-service-page .citizen-support a{background:#fff;color:#166534;border:1px solid #b9c9bf;border-radius:10px;min-height:46px}
+.pace-service-page .pace-channel-picker{border:0;padding:0;margin:0 0 28px;min-width:0}
+.pace-service-page .pace-channel-picker>legend{float:none;width:100%;font-family:var(--font-display);font-size:25px;font-weight:700;letter-spacing:-.035em;line-height:1.4;margin:0 0 20px;padding:0;color:#183328}
+.pace-service-page .pace-channel-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.pace-service-page .pace-channel-choice{display:block;position:relative;min-width:0;margin:0;cursor:pointer}
+.pace-service-page .pace-channel-choice>input{position:absolute;left:15px;top:20px;width:18px;height:18px;accent-color:#15803d;z-index:1;margin:0;cursor:pointer}
+.pace-service-page .pace-channel-body{height:100%;display:flex;flex-direction:column;padding:17px 13px 17px 45px;border:1px solid #c9d8cd;border-radius:13px;background:#fff;gap:6px;min-height:112px}
+.pace-service-page .pace-channel-body>strong{font-size:14px;line-height:1.45;color:#183328}
+.pace-service-page .pace-channel-body>span{font-size:12px;line-height:1.6;color:#647168}
+.pace-service-page .pace-channel-choice>input:checked~.pace-channel-body{border:2px solid #15803d;padding:16px 12px 16px 44px;background:#f0f7f0}
+.pace-service-page .pace-channel-choice>input:focus-visible~.pace-channel-body{outline:3px solid #d6a526;outline-offset:3px}
+.pace-service-page #guestMaceInfo{margin:0 0 20px;background:#fcf7e8;border-color:#eedb9c;color:#65532c;font-size:14px;line-height:1.65}
+.pace-service-page .pace-location-details,.pace-service-page .citizen-consult-help{margin:18px 0;padding:0;border:1px solid #d3e2d6;border-radius:12px;background:#fff}
+.pace-service-page .pace-location-details summary,.pace-service-page .citizen-consult-help summary{padding:12px 16px;font-size:14px;font-weight:600;color:#166534;cursor:pointer}
+.pace-service-page .pace-location-details[open] summary,.pace-service-page .citizen-consult-help[open] summary{border-bottom:1px solid #e1ebe3}
+.pace-service-page .pace-location-details .consultation-location,.pace-service-page .citizen-consult-help>div{margin:0;border:0;padding:16px 18px;background:transparent}
+.pace-service-page .consultation-location>.field-hint{margin:0 0 18px}
+.pace-service-page .citizen-consult-help{margin:22px 0 0}
+.pace-service-page .operations-check{align-items:start;gap:11px;margin:18px 0;padding:0;border:0;border-radius:0}
+.pace-service-page .operations-check input{margin-top:3px;accent-color:#15803d;flex-shrink:0}
+.pace-service-page .operations-check label{font-size:13px;line-height:1.7;color:#4f6156}
+.pace-service-page .pace-privacy-strip{display:inline-flex;align-items:center;gap:8px;background:#166534;color:#fff;padding:7px 11px;border-radius:7px;font-size:13px;font-weight:600;margin:0}
+.pace-service-page .pace-evidence-box{position:relative;border:1px dashed #7da787;background:#f7faf7;border-radius:12px;padding:14px 16px 14px 61px;margin-bottom:0}
+.pace-service-page .pace-evidence-box .form-label{color:#166534;position:absolute;top:24px;left:18px;margin:0;font-size:25px}
+.pace-service-page .pace-evidence-box .form-label span{position:absolute;clip-path:inset(50%);width:1px;height:1px;overflow:hidden;white-space:nowrap}
+.pace-service-page .complaint-file-input{background:transparent;border:0;padding:5px 0;font-size:13px;min-height:40px}
+.pace-service-page .complaint-file-input::file-selector-button{border:1px solid #91aa98;border-radius:7px;padding:8px 12px;background:#fff;color:#166534;margin-right:12px;font:inherit;cursor:pointer}
+.pace-service-page .pace-privacy-note{margin-top:16px}
+.pace-service-page .complaint-chronology{height:150px;min-height:150px!important}
+.pace-service-page .field-optional{font-size:12px;color:#6d786f;font-weight:400}
+.pace-service-page .citizen-result{margin-top:24px}
+.pace-service-page .pace-fee-layout .pace-form-section{border:1px solid #dce8df;border-radius:14px;padding:16px;margin-top:16px}
+.pace-service-page .pace-fee-layout .pace-form-section>h3{background:#edf5ee;margin:-16px -16px 16px;padding:10px 14px;border-radius:13px 13px 0 0}
+.pace-service-page .pace-fee-layout .pace-form-section>h3:after{display:none}
+.pace-service-page .pace-fee-layout .pace-form-section .citizen-field-grid>.form-group{margin-bottom:0}
+.pace-service-page .pace-fee-layout .citizen-party .citizen-field-grid{gap:14px 12px}
+.pace-service-page .pace-fee-layout .citizen-party .form-group{margin-bottom:14px}
+.pace-service-page .pace-fee-layout .citizen-party{margin:0;padding-top:8px}
+.pace-service-page .pace-fee-layout .citizen-party legend{width:100%;padding:8px 12px;margin-bottom:14px}
+.pace-service-page .pace-consult-page .pace-form-section{border-top:1px solid #d5e2d8;padding-top:23px;margin-top:0}
+.pace-service-page .pace-consult-page .pace-form-section>h2{font-size:22px;color:#183328}
+.pace-service-page .pace-consult-page .pace-form-section>h2:after{display:none}
+.pace-service-page .pace-consult-page .citizen-guide-number{background:#cee9d1;color:#166534;font-size:17px;font-weight:700;width:34px;height:34px}
+.pace-service-page .pace-form-layout .citizen-guide-steps{display:block}
+.pace-service-page .pace-case-guide .pace-info-row>i{background:#eef6ec;border-radius:9px;display:grid;place-items:center;width:46px;height:46px;font-size:23px;padding:0}
+.pace-service-page .pace-case-guide .pace-info-row h3{font-size:18px}
+.pace-service-page .pace-fee-layout .region-picker{margin-bottom:15px}
+@media(max-width:1100px){
+ .pace-service-page .pace-form-layout{grid-template-columns:minmax(0,2fr) minmax(260px,1fr);gap:20px}
+ .pace-service-page .citizen-panel{padding:24px}
+ .pace-service-page .citizen-party .citizen-field-grid{grid-template-columns:minmax(0,1fr)}
+ .pace-service-page .pace-channel-grid{gap:8px}.pace-service-page .pace-channel-body{padding:16px 10px 16px 39px}.pace-service-page .pace-channel-choice>input:checked~.pace-channel-body{padding:15px 9px 15px 38px}
+}
+@media(max-width:880px){
+ .pace-service-page .pace-form-layout{grid-template-columns:minmax(0,1fr)}
+ .pace-service-page .citizen-task-heading.citizen-task-illustrated h1{font-size:37px}
+ .pace-service-page .citizen-task-illustrated>.ui-illustration{width:130px;height:130px}
+ .pace-service-page .citizen-party .citizen-field-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .pace-service-page .pace-channel-body{min-height:112px}
+}
+@media(max-width:540px){
+ .pace-service-page .citizen-main{padding:0 16px 24px}
+ .pace-service-page .citizen-task-heading.citizen-task-illustrated{padding:22px 2px 12px;gap:8px;margin:0 0 14px;min-height:0;align-items:start}
+ .pace-service-page .citizen-task-heading.citizen-task-illustrated h1{font-size:29px;line-height:1.25;margin-bottom:13px}
+ .pace-service-page .citizen-task-heading h1:after{width:62px;height:4px;margin-top:12px}
+ .pace-service-page .citizen-task-heading.citizen-task-illustrated p{font-size:14px;line-height:1.65}
+ .pace-service-page .citizen-task-illustrated>.ui-illustration{width:70px;height:78px;margin-top:6px}
+ .pace-service-page .citizen-panel{padding:22px 18px;border-radius:18px}
+ .pace-service-page .citizen-panel h2{font-size:23px}
+ .pace-service-page .citizen-field-grid,.pace-service-page #feeParties{grid-template-columns:minmax(0,1fr)}
+ .pace-service-page .citizen-party .citizen-field-grid{grid-template-columns:minmax(0,1fr)}
+ .pace-service-page .pace-form-section>h2,.pace-service-page .pace-form-section>h3{font-size:17px}
+ .pace-service-page .pace-form-actions{flex-direction:column;align-items:stretch}.pace-service-page .pace-form-actions .btn{width:100%}
+ .pace-service-page .pace-channel-grid{grid-template-columns:minmax(0,1fr);gap:10px}
+ .pace-service-page .pace-channel-body{min-height:0;display:flex;gap:3px;padding:14px 13px 14px 44px}
+ .pace-service-page .pace-channel-body>strong{font-size:14px}.pace-service-page .pace-channel-body>span{font-size:12px}
+ .pace-service-page .pace-channel-choice>input{top:18px;left:14px}
+ .pace-service-page .pace-channel-choice>input:checked~.pace-channel-body{padding:13px 12px 13px 43px}
+ .pace-service-page .pace-channel-picker>legend{font-size:23px;margin-bottom:17px}
+ .pace-service-page .pace-privacy-strip{font-size:12px}
+ .pace-service-page .citizen-support{padding:22px;display:block}.pace-service-page .citizen-support a{margin-top:18px;display:inline-flex}
+ .pace-service-page .pace-fee-layout .pace-form-section .citizen-field-grid>.form-group{margin-bottom:16px}
+ .pace-service-page .pace-fee-layout .pace-form-section .citizen-field-grid>.form-group:last-child{margin-bottom:0}
+ .pace-service-page .pace-fee-layout .citizen-party .citizen-field-grid{gap:0}
+ .pace-service-page .pace-evidence-box{padding:14px}
+ .pace-service-page .pace-evidence-box .form-label{position:static;font-size:20px;margin-bottom:5px}
+}

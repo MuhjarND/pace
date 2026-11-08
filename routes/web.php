@@ -21,6 +21,7 @@ Route::get('/wilayah', 'PublicPortalController@regions')->middleware('throttle:1
 Route::get('/perkiraan-biaya', 'PublicPortalController@fees')->name('public.fees');
 Route::post('/perkiraan-biaya', 'PublicPortalController@estimate')->middleware('throttle:30,1')->name('public.estimate');
 Route::get('/konsultasi', 'PublicPortalController@consult')->name('public.consult');
+Route::get('/konsultasi/mace/{id}', 'PublicPortalController@offline')->name('public.consult.offline');
 Route::get('/konsultasi/jadwal/{id}', 'PublicPortalController@availability')->middleware('throttle:90,1')->name('public.availability');
 Route::post('/konsultasi', 'GuestConsultationController@store')->middleware('throttle:10,10')->name('public.book');
 Route::get('/tiket/{id}', 'GuestConsultationController@show')->name('public.ticket');
@@ -62,6 +63,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/meetings/{id}/retry-wa', 'GuestQueueController@retry')->name('meetings.retry-wa');
     Route::get('/operations/public-data', 'PublicDataController@index')->name('operations.public-data');
     Route::post('/operations/public-data/territories', 'PublicDataController@territory')->name('operations.territories');
+    Route::post('/operations/public-data/travel-origins', 'PublicDataController@travelOrigin')->name('operations.travel-origins');
     Route::post('/operations/public-data/tariffs', 'PublicDataController@tariff')->name('operations.tariffs');
 
     Route::get('/admin/accounts', 'AdminAccountController@index')->name('admin.accounts.index');

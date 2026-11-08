@@ -51,6 +51,100 @@ class PublicAccessTest extends TestCase
         foreach(['/','/cari-pengadilan','/perkiraan-biaya','/konsultasi']as$url)$this->get($url)->assertOk()->assertDontSee('unit-test-token');
         $this->assertGuest();
     }
+    public function test_mace_creates_a_private_offline_queue_ticket_without_meet_or_whatsapp(){
+        $this->get('/konsultasi')->assertOk()->assertSee('Konsultasi Bersama Mace (offline)');
+        $this->book(['channel'=>'mace','phone'=>null,'consultation_date'=>null,'consultation_time'=>null])->assertRedirect();
+        $ticket = GuestTicket::firstOrFail(); $meeting = $ticket->meeting;
+        $this->assertTrue($meeting->isMace());
+        $this->assertSame('A001', $meeting->queueLabel());
+        $this->assertSame('2026-10-31', $meeting->queue_date->toDateString());
+        $this->assertSame('immediate', $meeting->verification_status);
+        $this->assertNull($meeting->join_url); $this->assertNull($ticket->invite_secret); $this->assertFalse($ticket->inviteActive());
+        $this->assertSame(0, ChatRoom::count());
+        $this->get(route('public.ticket',$ticket->public_id))->assertOk()->assertSee('A001')->assertSee('Konsultasi Bersama Mace (offline)')->assertDontSee('Gabung Google Meet');
+        $this->getJson(route('public.ticket.state',$ticket->public_id))->assertOk()->assertJsonPath('queue.position',1)->assertJsonPath('can_join',false);
+        $this->post(route('public.ticket.join',$ticket->public_id))->assertStatus(422);
+        $this->flushSession(); $this->get(route('public.ticket',$ticket->public_id))->assertNotFound();
+        Http::assertNothingSent();
+    }
+    public function test_mace_guidance_uses_selected_court_details_hours_and_closures(){
+        $unit = $this->unit();
+        $unit->update(['address'=>'Alamat PTSP uji','phone'=>'0951-123456','schedule_enabled'=>true,'public_requirements'=>'Bawa nomor perkara bila ada.']);
+        $unit->hours()->create(['weekday'=>1,'is_open'=>true,'opens_at'=>'08:00','closes_at'=>'16:00','break_start'=>'12:00','break_end'=>'13:00']);
+        $unit->holidays()->create(['date'=>'2026-11-02','name'=>'Tutup layanan uji']);
+        $unit->holidays()->create(['date'=>'2026-10-01','name'=>'Tutup yang sudah lewat']);
+        $this->get(route('public.consult.offline', $unit->id))->assertOk()
+            ->assertSee('Konsultasi Bersama Mace')->assertSee($unit->name)->assertSee('Alamat PTSP uji')->assertSee('0951-123456')
+            ->assertSee('Senin 08:00')->assertSee('Istirahat 12:00')->assertSee('Tutup layanan uji')->assertDontSee('Tutup yang sudah lewat')
+            ->assertSee('Bawa nomor perkara bila ada.')->assertSee('https://www.google.com/maps/search/', false)
+            ->assertSee('Ambil nomor antrean Mace');
+    }
+    public function test_mace_guidance_handles_missing_details_and_rejects_inactive_courts(){
+        $unit = $this->unit();
+        $unit->update(['address'=>null,'phone'=>null,'schedule_enabled'=>false]);
+        $this->get(route('public.consult.offline', $unit->id))->assertOk()->assertSee('Alamat belum dipublikasikan')
+            ->assertSee('Jam layanan belum tersedia')->assertDontSee('https://www.google.com/maps/search/', false);
+        $unit->update(['is_active'=>false]);
+        $this->get(route('public.consult.offline', $unit->id))->assertNotFound();
+        $this->book(['channel'=>'mace','work_unit_id'=>$unit->id])->assertStatus(422);
+    }
+    public function test_mace_requires_a_valid_court_and_preserves_territory_routing(){
+        $this->postJson('/konsultasi', ['channel'=>'mace'])->assertStatus(422)->assertJsonValidationErrors('work_unit_id');
+        $this->postJson('/konsultasi', ['channel'=>'mace','work_unit_id'=>999999])->assertStatus(422)->assertJsonValidationErrors('work_unit_id');
+        $this->regions();
+        CourtTerritory::create(['work_unit_id'=>$this->unit()->id,'region_code'=>'96.71','is_verified'=>true,
+            'source_title'=>'SK uji','source_url'=>'https://court.example.go.id/sk','effective_date'=>'2026-01-01']);
+        $this->book(['channel'=>'mace','work_unit_id'=>$this->unit('Pengadilan Agama Manokwari')->id,'region_code'=>'96.71.01.1001'])
+            ->assertSessionHasErrors('work_unit_id');
+        $this->assertSame(0, GuestTicket::count());
+    }
+    public function test_mace_retries_reuse_the_ticket_and_share_daily_numbers_with_meet(){
+        $this->book(['channel'=>'mace','phone'=>null])->assertRedirect(); $ticket=GuestTicket::firstOrFail();
+        $payload=['request_key'=>session('public_booking_nonce'),'channel'=>'mace','work_unit_id'=>$this->unit()->id,
+            'name'=>'Tamu pengujian','topic'=>'Pertanyaan privat uji','consent'=>'1'];
+        $this->post('/konsultasi',$payload)->assertRedirect(route('public.ticket',$ticket->public_id));
+        $this->assertSame(1,Meeting::count()); $this->assertSame(1,GuestTicket::count());
+        $this->link(); $this->book()->assertRedirect();
+        $this->assertSame('A002',GuestTicket::latest('id')->first()->meeting->queueLabel());
+        Carbon::setTestNow('2026-11-01 00:00:00');
+        $this->book(['channel'=>'mace'])->assertRedirect();
+        $this->assertSame('A001',GuestTicket::latest('id')->first()->meeting->queueLabel());
+    }
+    public function test_mace_staff_can_call_start_complete_and_cancel_with_queue_and_scope_guards(){
+        $this->book(['channel'=>'mace','phone'=>null]); $first=GuestTicket::firstOrFail();
+        $this->book(['channel'=>'mace','phone'=>null]); $second=GuestTicket::latest('id')->first();
+        $staff=$this->staff(); $other=$this->staff('Pengadilan Agama Manokwari');
+        $this->actingAs($other)->post('/meetings/'.$first->meeting_id.'/call-guest')->assertNotFound();
+        $this->actingAs($staff)->get('/operations/queue')->assertOk()->assertSee('Konsultasi Bersama Mace (offline)')->assertDontSee('Buka Meet');
+        $this->post('/meetings/'.$first->meeting_id.'/start')->assertStatus(422);
+        $this->post('/meetings/'.$second->meeting_id.'/call-guest')->assertStatus(422);
+        $this->post('/meetings/'.$first->meeting_id.'/call-guest')->assertRedirect();
+        $this->assertSame(0,WhatsappNotification::count());
+        $this->getJson(route('public.ticket.state',$first->public_id))->assertJsonPath('queue.status','Siap dilayani')->assertJsonPath('can_join',false);
+        $this->post('/meetings/'.$first->meeting_id.'/complete')->assertStatus(422);
+        $this->post('/meetings/'.$first->meeting_id.'/start')->assertRedirect();
+        $this->assertSame('started',$first->meeting->fresh()->status);
+        $this->post('/meetings/'.$first->meeting_id.'/complete')->assertRedirect();
+        $this->assertSame('ended',$first->meeting->fresh()->status);
+        $this->get('/meetings')->assertOk()->assertSee('Konsultasi Bersama Mace (offline)');
+        $this->delete(route('public.ticket.cancel',$second->public_id))->assertRedirect();
+        $this->assertSame('cancelled',$second->meeting->fresh()->status);
+        $this->getJson(route('public.ticket.state',$second->public_id))->assertJsonPath('queue.position',null)->assertJsonPath('can_join',false);
+        Http::assertNothingSent();
+    }
+    public function test_mace_obeys_open_hours_breaks_closures_and_shared_daily_quota(){
+        $unit=$this->unit(); $unit->update(['schedule_enabled'=>true,'daily_quota'=>1]);
+        $hour=$unit->hours()->create(['weekday'=>6,'is_open'=>true,'opens_at'=>'10:00','closes_at'=>'16:00']);
+        $this->book(['channel'=>'mace'])->assertSessionHasErrors('channel');
+        $hour->update(['opens_at'=>'08:00','break_start'=>'09:00','break_end'=>'10:00']);
+        $this->book(['channel'=>'mace'])->assertSessionHasErrors('channel');
+        $hour->update(['break_start'=>null,'break_end'=>null]);
+        $holiday=$unit->holidays()->create(['date'=>'2026-10-31','name'=>'Hari tutup uji']);
+        $this->book(['channel'=>'mace'])->assertSessionHasErrors('channel'); $holiday->delete();
+        $this->link(); $this->book()->assertRedirect();
+        $this->book(['channel'=>'mace'])->assertSessionHasErrors('channel');
+        $this->assertSame(1,Meeting::count());
+    }
     public function test_pinned_data_is_complete_unique_hierarchical_and_routes_all_regencies(){
         $this->artisan('ptsp:import-regions')->assertExitCode(0);$this->artisan('ptsp:import-court-territories')->assertExitCode(0);
         $this->assertSame(2075,Region::count());$this->assertSame(13,CourtTerritory::count());

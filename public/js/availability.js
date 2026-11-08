@@ -9,10 +9,26 @@
     const submit = document.getElementById('bookConsultation');
     const unit = document.getElementById(form.dataset.unitSelector || '');
     const channel = document.getElementById(form.dataset.channelSelector || '');
-    function isMeet() { return !channel || channel.value === 'meet'; }
+    function channelValue() {
+        if (!channel) return 'meet';
+        if (channel.tagName === 'SELECT') return channel.value;
+        const checked = channel.querySelector('input[name="channel"]:checked');
+        return checked ? checked.value : 'chat';
+    }
+    function isMeet() { return channelValue() === 'meet'; }
+    function maceGuide() {
+        const link = document.getElementById('guestMaceGuide');
+        if (!link) return;
+        link.hidden = !unit.value;
+        link.href = link.dataset.endpoint.replace('__UNIT__', unit.value);
+    }
     function channelState() {
         if (!channel) return;
         const meet = isMeet();
+        const mace = channelValue() === 'mace';
+        document.getElementById('guestMaceInfo').hidden = !mace;
+        maceGuide();
+        submit.querySelector('[data-submit-label]').textContent = mace ? 'Ambil nomor antrean Mace' : 'Ajukan konsultasi';
         document.getElementById('guestMeetFields').hidden = !meet;
         date.disabled = !meet; date.required = meet;
         time.required = meet; time.disabled = !meet;
@@ -65,7 +81,7 @@
     document.addEventListener('visibilitychange', () => { if (!document.hidden) loadTimes(true); });
     window.addEventListener('pagehide', () => { if (controller) controller.abort(); });
     window.addEventListener('pageshow', event => { if (event.persisted) loadTimes(true); });
-    if (unit) unit.addEventListener('change',() => loadTimes(false));
+    if (unit) unit.addEventListener('change',() => { maceGuide(); loadTimes(false); });
     if (channel) { channel.addEventListener('change',channelState); channelState(); }
     else loadTimes(true);
 })();

@@ -17,11 +17,13 @@ class GuestQueueController extends Controller
             WorkUnit::where('name',$visible->work_unit)->lockForUpdate()->firstOrFail();
             $m = Meeting::whereKey($visible->id)->lockForUpdate()->firstOrFail();
             abort_unless($m->canManage(auth()->user()),403);
-            abort_unless($m->status === 'scheduled' && $m->canJoin(auth()->user()) && app(ConsultationQueueService::class)->state($m)['ready'],422,'Verifikasi, waktu, dan giliran antrean harus sesuai sebelum memanggil.');
-            $ticket = $m->guestTicket; abort_unless($ticket && $ticket->inviteActive(),422,'Tiket tamu sudah tidak berlaku.');
+            abort_unless($m->status === 'scheduled' && $m->canServe(auth()->user()) && app(ConsultationQueueService::class)->state($m)['ready'],422,'Verifikasi, waktu, dan giliran antrean harus sesuai sebelum memanggil.');
+            $ticket = $m->guestTicket; abort_unless($ticket && $ticket->expires_at->gt(now()) && ($m->isMace() || $ticket->inviteActive()),422,'Tiket tamu sudah tidak berlaku.');
             if (!$m->called_at) $m->forceFill(['called_at'=>now(),'called_by'=>auth()->id()])->save();
+            if ($m->isMace()) return null;
             return WhatsappNotification::firstOrCreate(['guest_ticket_id'=>$ticket->id],['status'=>'queued']);
         });
+        if (!$n) return redirect()->route('operations.queue')->with('success','Antrean Mace dipanggil. Persilakan pemohon menuju petugas PTSP.');
         $n = $fonnte->deliver($n->id);
         return redirect()->route('operations.queue')->with('success','Tamu dipanggil. WhatsApp: '.$n->statusLabel().'.');
     }
